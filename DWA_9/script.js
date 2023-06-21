@@ -5,65 +5,48 @@ let matches = books
 
 const starting = document.createDocumentFragment()
 
-/*for (const { author, id, image, title } of matches.slice(0, BOOKS_PER_PAGE)) {
-    const element = document.createElement('button')
-    element.classList = 'preview'
-    element.setAttribute('data-preview', id)
 
-    element.innerHTML = `
-        <img
-            class="preview__image"
-            src="${image}"
-        />
-        
-        <div class="preview__info">
+/**The WebComponent for a book preview */
+class BookPreview extends HTMLElement {
+    constructor() {
+      super();
+    }
+  
+    connectedCallback() {
+      const author = this.getAttribute('author');
+      const id = this.getAttribute('id');
+      const image = this.getAttribute('image');
+      const title = this.getAttribute('title');
+  
+      this.render(author, id, image, title);
+    }
+  
+    render(author, id, image, title) {
+      this.innerHTML = /* html */ `
+        <button class="preview" data-preview="${id}">
+          <img class="preview__image" src="${image}" />
+          <div class="preview__info">
             <h3 class="preview__title">${title}</h3>
             <div class="preview__author">${authors[author]}</div>
-        </div>
-    `
-
-    starting.appendChild(element)
-}*/
-
-
-
-//Created a factory function that returns a html structure for a book review
-const createPreview = ({author, id, image, title}) => {
-    const element = document.createElement('button')
-    element.classList = 'preview'
-    element.setAttribute('data-preview', id)
-
-    element.innerHTML = /* html*/  `
-        <img
-            class="preview__image"
-            src="${image}"
-        />
-        
-        <div class="preview__info">
-            <h3 class="preview__title">${title}</h3>
-            <div class="preview__author">${authors[author]}</div>
-        </div>`
-    return element
+          </div>
+        </button>
+      `;
+    }
+  
 }
+  
+customElements.define('book-preview', BookPreview);
 
-const createPreviewList = (list) =>{
-    list.map((book)=>{
-        const {author, image, id, title } = book
-        const preview = createPreview({
-            author,
-            id,
-            image, 
-            title
-        })
-        starting.appendChild(preview)
-    })
-    document.querySelector('[data-list-items]').appendChild(starting)
-}
+const listItems = document.querySelector('[data-list-items]')
 
-createPreviewList(matches.slice(0, BOOKS_PER_PAGE))
-
-
-document.querySelector('[data-list-items]').appendChild(starting)
+matches.slice(0, BOOKS_PER_PAGE).forEach((book)=>{
+    const preview = document.createElement("book-preview");
+    preview.setAttribute("author", book.author);
+    preview.setAttribute("id", book.id);
+    preview.setAttribute("image", book.image);
+    preview.setAttribute("title", book.title);
+    listItems.appendChild(preview)
+})
 
 
 
